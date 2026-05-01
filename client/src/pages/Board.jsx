@@ -4,7 +4,7 @@ import { Excalidraw } from "@excalidraw/excalidraw";
 import "@excalidraw/excalidraw/index.css";
 import { io } from "socket.io-client";
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:4000";
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || (window.location.port === "5173" ? "http://localhost:4000" : window.location.origin);
 
 export default function Board() {
   const { roomId } = useParams();

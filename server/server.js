@@ -11,6 +11,10 @@ const io = new Server(server, {
   cors: { origin: "*", methods: ["GET", "POST"] }
 });
 
+const path = require("path");
+// Serve frontend static files
+app.use(express.static(path.join(__dirname, "../client/dist")));
+
 // { roomId: { elements: [], users: Map<socketId, { name, color }> } }
 const rooms = new Map();
 
@@ -69,6 +73,10 @@ io.on("connection", (socket) => {
     }
     console.log("Disconnected:", socket.id);
   });
+});
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/dist/index.html"));
 });
 
 const PORT = process.env.PORT || 4000;
