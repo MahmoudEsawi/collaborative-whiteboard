@@ -66,6 +66,19 @@ export default function Landing() {
           </form>
         </div>
       </main>
+
+      {/* Footer */}
+      <footer className="py-6 text-center text-sm text-gray-500 font-medium w-full">
+        Built with ❤️ by{" "}
+        <a 
+          href="https://github.com/MahmoudEsawi" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="text-[#6965db] hover:underline"
+        >
+          Mahmoud Esawi
+        </a>
+      </footer>
     </div>
   );
 }
