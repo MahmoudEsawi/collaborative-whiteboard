@@ -135,11 +135,11 @@ export default function Board() {
       `}</style>
 
       {/* Top overlay bar */}
-      <div className="absolute top-3 right-3 z-[100] flex items-center gap-2" style={{ fontFamily: "'Inter', sans-serif" }}>
+      <div className="absolute top-[60px] right-3 md:top-3 md:right-3 z-[100] flex flex-col md:flex-row items-end md:items-center gap-2 pointer-events-none" style={{ fontFamily: "'Inter', sans-serif" }}>
         {/* Room code + copy */}
         <button
           onClick={copyRoomId}
-          className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm text-sm hover:bg-gray-50 transition-colors cursor-pointer"
+          className="flex items-center gap-2 px-3 py-2 bg-white/90 backdrop-blur border border-gray-200 rounded-lg shadow-sm text-sm hover:bg-gray-50 transition-colors cursor-pointer pointer-events-auto"
         >
           <code className="font-mono text-gray-600 text-xs">{roomId}</code>
           <span className="text-gray-400">
@@ -152,7 +152,7 @@ export default function Board() {
         </button>
 
         {/* Connected users */}
-        <div className="flex items-center gap-1 px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm">
+        <div className="flex items-center gap-1 px-3 py-2 bg-white/90 backdrop-blur border border-gray-200 rounded-lg shadow-sm pointer-events-auto">
           <div className="flex -space-x-2">
             {users.map((u, i) => (
               <div
