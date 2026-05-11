@@ -1,7 +1,12 @@
+console.log("STARTING SERVER.JS");
 const express = require("express");
+console.log("express loaded");
 const http = require("http");
+console.log("http loaded");
 const { Server } = require("socket.io");
+console.log("socket.io loaded");
 const cors = require("cors");
+console.log("cors loaded");
 
 const app = express();
 app.use(cors());
