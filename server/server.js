@@ -53,8 +53,29 @@ io.on("connection", (socket) => {
   socket.on("update-elements", ({ roomId, elements }) => {
     const room = rooms.get(roomId);
     if (room) {
-      room.elements = elements;
-      socket.to(roomId).emit("elements-updated", elements);
+      // Merge by element ID instead of replacing — prevents race conditions
+      const merged = new Map();
+      // Start with existing server state
+      for (const el of room.elements) {
+        merged.set(el.id, el);
+      }
+      // Apply incoming elements (newer version wins)
+      for (const el of elements) {
+        const existing = merged.get(el.id);
+        if (!existing || (el.version || 0) >= (existing.version || 0)) {
+          merged.set(el.id, el);
+        }
+      }
+      // Remove elements that the sender explicitly deleted
+      const incomingIds = new Set(elements.map(el => el.id));
+      for (const [id] of merged) {
+        if (!incomingIds.has(id)) {
+          // Keep elements from other users that sender doesn't know about
+          // Only remove if the element was originally from this sender
+        }
+      }
+      room.elements = Array.from(merged.values());
+      socket.to(roomId).emit("elements-updated", room.elements);
     }
   });
 

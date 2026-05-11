@@ -19,6 +19,21 @@ export default function Board() {
   const hasInitialized = useRef(false);
   const debounceTimer = useRef(null);
 
+  // Merge helper: combines local + remote elements, newer version wins
+  const mergeElements = useCallback((localElements, remoteElements) => {
+    const merged = new Map();
+    for (const el of localElements) {
+      merged.set(el.id, el);
+    }
+    for (const el of remoteElements) {
+      const existing = merged.get(el.id);
+      if (!existing || (el.version || 0) >= (existing.version || 0)) {
+        merged.set(el.id, el);
+      }
+    }
+    return Array.from(merged.values());
+  }, []);
+
   // Join room after nickname is set
   useEffect(() => {
     if (!joined || !nickname) return;
@@ -36,10 +51,13 @@ export default function Board() {
       hasInitialized.current = true;
     });
 
-    socket.on("elements-updated", (elements) => {
+    socket.on("elements-updated", (remoteElements) => {
       if (!canvasAPI) return;
       isRemoteUpdate.current = true;
-      canvasAPI.updateScene({ elements });
+      // Merge remote elements with current local state instead of replacing
+      const localElements = canvasAPI.getSceneElements() || [];
+      const merged = mergeElements(localElements, remoteElements);
+      canvasAPI.updateScene({ elements: merged });
       requestAnimationFrame(() => { isRemoteUpdate.current = false; });
     });
 
@@ -51,7 +69,7 @@ export default function Board() {
       socket.disconnect();
       socketRef.current = null;
     };
-  }, [joined, nickname, roomId, canvasAPI]);
+  }, [joined, nickname, roomId, canvasAPI, mergeElements]);
 
   const handleChange = useCallback((elements) => {
     if (isRemoteUpdate.current || !hasInitialized.current || !socketRef.current) return;
@@ -61,7 +79,7 @@ export default function Board() {
         roomId,
         elements: JSON.parse(JSON.stringify(elements)),
       });
-    }, 100);
+    }, 50);
   }, [roomId]);
 
   const copyRoomId = () => {
